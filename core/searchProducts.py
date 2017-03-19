@@ -35,7 +35,7 @@ def searchProducts(htmlFile,pageNumber, productName):
         pattern = re.compile(rex)
         list = str(list)
         productInfo.append(re.findall(pattern,list))
-    productDatabase = open('F:\E-Site Web Crawler\Product Information\Product Info database_page {}.csv'
+    productDatabase = open('C:\workspace\TmallReviewCrawlingToolLaptopVer\Product Information\Product Info database_page {}.csv'
                            .format(pageNumber), 'w')
     for i in range(len(productInfo)):
 
@@ -52,5 +52,5 @@ def searchProducts(htmlFile,pageNumber, productName):
     return productAndSeller
 def createDatabase(pageNumber):
     for i in range(pageNumber):
-        file = open('F:\E-Site Web Crawler\HTMLSource\第{}页网页代码.html'.format(i + 1), 'rb')
+        file = open('C:\workspace\TmallReviewCrawlingToolLaptopVer\HTMLSource\第{}页网页代码.html'.format(i + 1), 'rb')
         searchProducts(file,i+1)

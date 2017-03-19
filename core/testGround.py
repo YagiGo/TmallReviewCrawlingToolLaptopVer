@@ -7,7 +7,7 @@ from core.searchProducts import searchProducts
     searchProducts(file,i+1)
 '''
 productName = []
-file = open('F:\E-Site Web Crawler\HTMLSource\第1页网页代码.html', 'rb')
+file = open('C:\workspace\TmallReviewCrawlingToolLaptopVer\HTMLSource\第1页网页代码.html', 'rb')
 productAndSellerID = searchProducts(file,1,productName)
 print(len(productAndSellerID))
 print(len(productName))

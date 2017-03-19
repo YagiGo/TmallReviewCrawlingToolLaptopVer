@@ -68,7 +68,7 @@ for url in urls:
 
 #for j in range(0, len(reviewContent)):
 #    print(reviewContent[j] + '\n')
-file = open('F:\E-Site Web Crawler\Test.csv', 'w')
+file = open('C:\workspace\TmallReviewCrawlingToolLaptopVer\Test.csv', 'w')
 for i in list(range(0,len(username))):
         file.write(','.join((username[i],reviewDate[i],reviewContent[i])) + '\n')
 file.close()

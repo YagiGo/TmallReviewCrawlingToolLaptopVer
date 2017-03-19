@@ -58,7 +58,7 @@ def getPageHtml(username,password,keyword,pageNumber):
     for i in range(pageNumber):
 
         html_source = (browser.page_source).encode('utf-8') #得到当前页的html网址 按照utf-8
-        file = open('F:\E-Site Web Crawler\HTMLSource\第{}页网页代码.html'.format(i+1), 'wb')
+        file = open('C:\workspace\TmallReviewCrawlingToolLaptopVer\HTMLSource\第{}页网页代码.html'.format(i+1), 'wb')
         print('正在获取第{}页的网页html代码，html文件可在htmlSource目录下找到'.format(i + 1))
         file.write(html_source)
         file.close()

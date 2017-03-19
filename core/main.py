@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding utf-8 -*-
 from core.getHTML import getPageHtml
-from core.searchProducts import searchProducts,createDatabase
+from core.searchProducts import searchProducts
 from core.getReview import getReview
 import time
 
@@ -17,7 +17,7 @@ if __name__ == '__main__':
     reviewPageNumber = int(input("请输入想要爬取得评论的页数："))
     getPageHtml(username,password,keyword,pageNumber)
     for i in range(pageNumber):
-        htmlFile = open('F:\E-Site Web Crawler\HTMLSource\第{}页网页代码.html'.format(i+1), 'rb')
+        htmlFile = open('C:\workspace\TmallReviewCrawlingToolLaptopVer\HTMLSource\第{}页网页代码.html'.format(i+1), 'rb')
         productAndSellerID = searchProducts(htmlFile, i, productName)
         print('第{}页网页源码爬取已完成，准备进行商品信息分析。。。'.format(i+1))
         getReview(productAndSellerID,productName,reviewPageNumber)

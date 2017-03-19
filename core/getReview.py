@@ -63,7 +63,7 @@ def saveReview(urls,username,reviewDate,reviewContent,reviewPageNumber,
             runningTimes = 0
             # for j in range(0, len(reviewContent)):
             # print(reviewContent[j] + '\n')
-    file = open("F:\E-Site Web Crawler\Reviews\{}.csv".format(productAndSellerID[item][0]), 'w', encoding='utf-8')
+    file = open("C:\workspace\TmallReviewCrawlingToolLaptopVer\Reviews\{}.csv".format(productAndSellerID[item][0]), 'w', encoding='utf-8')
     for i in list(range(0, len(username))):
         file.write(','.join((username[i], reviewDate[i], reviewContent[i])) + '\n')
     file.close()
