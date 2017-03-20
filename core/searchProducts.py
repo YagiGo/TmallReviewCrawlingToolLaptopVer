@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 # -*- coding utf-8 -*-
-import requests
 import re
 from bs4 import BeautifulSoup
 
@@ -22,7 +21,7 @@ from bs4 import BeautifulSoup
 '''
 #从获得的网页源文件中获取商品的名称和ID用于最终爬取商品评论
 def searchProducts(htmlFile,pageNumber, productName):
-    file = BeautifulSoup(htmlFile)
+    file = BeautifulSoup(htmlFile,'html.parser')
     productAndSeller = []
     productInfo = []
     #print(file.find_all('a', attrs={"target":"_blank","data-p":re.compile(r'^[0-9]*[1-9][0-9]*$-11')}))
@@ -31,9 +30,11 @@ def searchProducts(htmlFile,pageNumber, productName):
     for list in file.find_all('a', attrs={"target": "_blank", "data-p": re.compile(r'-11')}):
         #print(list)
         #rex = r'<a.*? data-p="-11" "(.*?)".*?>.*?</a>'
-        rex = '<a.*? data-p="(.+)" href="(.+)".*?>(.*?)</a>'
+        rex = '<a.*? data-p="(.+)" href="(.+)".*?>([\s\S]*?)</a>' #把(.*)更改成([\s\S]*)\s空白符，
+        # \S非空白符，所以[\s\S]是任意字符（修复了无法匹配换行符的问题）
         pattern = re.compile(rex)
         list = str(list)
+        #print(re.findall(pattern,list))
         productInfo.append(re.findall(pattern,list))
     productDatabase = open('C:\workspace\TmallReviewCrawlingToolLaptopVer\Product Information\Product Info database_page {}.csv'
                            .format(pageNumber), 'w')
