@@ -15,7 +15,7 @@ if __name__ == '__main__':
     keyword = str(input("输入搜索商品的关键字："))
     pageNumber = int(input("请输入想要搜索的页数："))
     reviewPageNumber = int(input("请输入想要爬取得评论的页数："))
-    #getPageHtml(username, password, keyword, pageNumber)
+    getPageHtml(username, password, keyword, pageNumber)
 
     for i in range(pageNumber):
         htmlFile = open('C:\workspace\TmallReviewCrawlingToolLaptopVer\HTMLSource\第{}页网页代码.html'.format(i+1), 'rb')

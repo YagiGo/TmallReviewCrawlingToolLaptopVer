@@ -1,6 +1,7 @@
+from pymongo import *
+
 #! /usr/bin/env python
 # -*- coding utf-8 -*-
-from pymongo import *
 import requests as rq
 import re
 import time
@@ -19,17 +20,10 @@ def checkIfCAPTCHATriggered(content):
         return isItCAPTCHA
 def saveReview(urls, username, reviewDate, reviewContent, reviewPageNumber,
                 runningTimes, productAndSellerID, item):
-    reviewDict = {}
+
     previousPage = []
-    flag = False #判断是否正确打开网页，是否触发远程主机强行关闭
     for url in urls:
-        try:
-            content = rq.get(url).text
-        except ConnectionResetError:
-            print("远程主机强迫关闭了一个现有的连接，将在10-20秒后重新连接。。。")
-            time.sleep(random.randint(10,20))
-            content = rq.get(url).text
-        #time.sleep(random.randint(3,5))
+        content = rq.get(url).text
         currentPage = re.findall(re.compile('"rateDate":"(.*?)","reply"'), content)
         print('正在搜索第{}页的评论，请稍后。。。'.format(runningTimes))
         print(previousPage)
@@ -44,9 +38,8 @@ def saveReview(urls, username, reviewDate, reviewContent, reviewPageNumber,
             isItCAPTCHA = pattern2.findall(firstUrl[0])  # 如果是触发了验证码，此时的域名应该是taobao.com'''
             isItCAPTCHA = checkIfCAPTCHATriggered(content)
             while (isItCAPTCHA == ['taobao.com']): #延迟几秒重新加载，直至不再触发
-                print('***************************************爬取速度过快，验证码输入被触发！等待重试'
-                      '************************************************')
-                #print(isItCAPTCHA[0])
+                print('爬取速度过快，验证码输入被触发！等待重试')
+                print(isItCAPTCHA[0])
                 time.sleep(random.randint(delayMin, delayMax))
                 delayMin += 1
                 delayMax += 1
@@ -71,18 +64,10 @@ def saveReview(urls, username, reviewDate, reviewContent, reviewPageNumber,
             runningTimes = 0
             # for j in range(0, len(reviewContent)):
             # print(reviewContent[j] + '\n')
-
     file = open("C:\workspace\TmallReviewCrawlingToolLaptopVer\Reviews\{}.csv".format(productAndSellerID[item][0]),
-               'w', encoding='utf-8')
-
+                'w', encoding='utf-8')
     for i in list(range(0, len(username))):
         file.write(','.join((username[i], reviewDate[i], reviewContent[i])) + '\n')
-        #dic = {reviewDate[i]:reviewContent[i]}
-        #reviewDict.update(dic)
-    #client = MongoClient("localhost", 27017)
-    #db = client.test_db
-    #collection = db.test_collection
-    #collection.insert_one(reviewDict)
     file.close()
     numberOfReviews = len(reviewContent)
     return numberOfReviews
@@ -106,3 +91,11 @@ def getReview(productAndSellerID, productName, reviewPageNumber):
         reviewsNumber += numberOfReviews
         # print(reviewsNumber) 测试评论数量是否正确输出
     return reviewsNumber
+
+client = MongoClient("localhost", 27017)
+db = client.test_db
+collection = db.test_collection
+userName = ['m***2']
+review = ['Very good!']
+time = ['2017/03/11']
+collection.insert_many(userName)

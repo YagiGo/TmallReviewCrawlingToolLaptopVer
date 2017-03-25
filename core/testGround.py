@@ -6,11 +6,18 @@ from core.searchProducts import searchProducts
     file = open('F:\E-Site Web Crawler\HTMLSource\第{}页网页代码.html'.format(i + 1), 'rb')
     searchProducts(file,i+1)
 '''
-productName = []
+'''productName = []
 file = open('C:\workspace\TmallReviewCrawlingToolLaptopVer\HTMLSource\第1页网页代码.html', 'rb')
 productAndSellerID = searchProducts(file,1,productName)
 print(len(productAndSellerID))
 print(len(productName))
 for item in range(len(productName)):
     print(productName[item])
-    print(productAndSellerID[item][0] + ' ' + productAndSellerID[item][3])
+    print(productAndSellerID[item][0] + ' ' + productAndSellerID[item][3])'''
+list = [1,2,3]
+res = ["one","two","three"]
+dic2 = {}
+for i in range(len(list)) :
+    dic = {list[i] : res[i]}
+    dic2.update(dic)
+print(dic2)
