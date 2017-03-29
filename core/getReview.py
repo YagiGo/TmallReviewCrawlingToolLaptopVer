@@ -146,7 +146,7 @@ def getUrls(reviewPageNumber, productID, sellerID):
     for i in list(range(reviewPageNumber)):
         urls.append(
             'https://rate.tmall.com/list_detail_rate.htm?itemId={}&sellerId={}&currentPage={}'
-                .format(productID, sellerID, i))
+                .format(productID, sellerID, i + 1))
         # urls.append('https://rate.tmall.com/list_detail_rate.htm?itemId=538921269672&spuId=702279218&sellerId=1714128138&order=3&currentPage=%s'
         # %i)
     return urls

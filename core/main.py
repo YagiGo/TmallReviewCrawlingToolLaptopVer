@@ -32,7 +32,6 @@ def getAllReviews(pageNumber):
     # print(reviewsNumber)
 
 if __name__ == '__main__':
-    pool = multiprocessing.Pool(processes = 4)
     start = time.clock()
     productName = []
     productNumber = 0
@@ -45,8 +44,9 @@ if __name__ == '__main__':
     #getPageHtml(username, password, keyword, pageNumber)
     #getAllReviews(pageNumber, productNumber, reviewsNumber)
     for i in range(pageNumber):
+        pool = multiprocessing.Pool(processes=8)
         #getAllReviews(i)
-        htmlFile = open('C:\workspace\TmallReviewCrawlingToolLaptopVer\HTMLSource\第{}页网页代码.html'.format(pageNumber + 1),
+        htmlFile = open('C:\workspace\TmallReviewCrawlingToolLaptopVer\HTMLSource\第{}页网页代码.html'.format(pageNumber),
                         'rb')
         productAndSellerID = searchProducts(htmlFile, i, productName)
         productNumber += len(productAndSellerID)
