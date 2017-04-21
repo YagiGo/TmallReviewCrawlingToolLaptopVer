@@ -1,4 +1,8 @@
 使用模块Selenium，request，time，OS，BeautifulSoup
+！使用项目IPProxy来爬取IP代理供爬虫使用，请先下载IPProxy项目运行后再运行本项目！
+https://github.com/qiyeboy/IPProxyPool
+
+
 基于python3.5
 使用之前需要把chromedriver加载到环境变量
 -win系统直接编辑环境变量
