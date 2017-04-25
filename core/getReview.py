@@ -11,7 +11,7 @@ import multiprocessing
 def loginTriggered(delayMin, delayMax):
     browser = webdriver.Chrome()
     url = 'https://sec.taobao.com/query.htm?action=QueryAction&event_submit_do_css=ok&smApp=tmallrateweb&smPolicy=' \
-          'tmallrateweb-rate-anti_Spider-checklogin&smCharset=GBK&smTag=MjIzLjcyLjcwLjExMywsZjNlZGRhMjBkNmM4NGE5Mzg4N' \
+          'tmallrateweb-rate-anti_Spider-checklogin&smCharset=GBK&smTAag=MjIzLjcyLjcwLjExMywsZjNlZGRhMjBkNmM4NGE5Mzg4N' \
           'jA0YjJkNzU2NzY4YzI%3D&smReturn=https%3A%2F%2Frate.tmall.com%2Flist_detail_rate.htm%3FitemId%3D535408892361%26' \
           'sellerId%3D849727411%26currentPage%3D50&smSign=V%2Fvid%2F75HKxVw4UkZ10YxA%3D%3D'
     username = '斯普欧罗'
@@ -30,14 +30,14 @@ def checkIfCAPTCHATriggered(content):
     # 可能是触发了验证码也可能没有更多评论显示，需要判断一下
     pattern = re.compile(r'[a-zA-z]+://[^\s]*')
     firstUrl = pattern.findall(content)  # 找到第一个域名,如果是正常的应该是tmall.com
-    if(len(firstUrl) == 0):
+    if(len(firstUrl ) == 0):
         return noContent
     else:
         print(content)
         pattern2 = re.compile(r'(?i)^https?://(?:\w+\.)*?(\w*\.(?:com\.cn|cn|com|net))[\\\/]*')  # 匹配顶级域名
         isItCAPTCHA = pattern2.findall(firstUrl[0])  # 如果是触发了验证码，此时的域名应该是taobao.com
         return isItCAPTCHA
-def searchAndSaveReviews(urls, username, reviewDate, reviewContent, reviewPageNumber,
+def searchAndSaveReviews(urlsUnfolded, urlsFolded, username, reviewDate, reviewContent, reviewPageNumber,
                 runningTimes, productAndSellerID, item):
     #reviewDict = {}
     previousPage = []
@@ -56,7 +56,7 @@ def searchAndSaveReviews(urls, username, reviewDate, reviewContent, reviewPageNu
                 'Referer' : 'rate.tmall.com'
 
     }
-    for url in urls:
+    for url in urlsUnfolded:
         #time.sleep(random.randint(1,3))
         count = 0 #抗反爬虫尝试次数
         flag1 = False  # 判断是否正确打开网页，是否触发远程主机强行关闭
@@ -126,7 +126,76 @@ def searchAndSaveReviews(urls, username, reviewDate, reviewContent, reviewPageNu
             runningTimes = 0
             # for j in range(0, len(reviewContent)):
             # print(reviewContent[j] + '\n')
+    for url in urlsFolded:
+        #time.sleep(random.randint(1,3))
+        count = 0 #抗反爬虫尝试次数
+        flag1 = False  # 判断是否正确打开网页，是否触发远程主机强行关闭
+        proxies = getIPProxies()
+        while not flag1:
+            try:
+                content = rq.get(url, proxies, headers = headers).text
+                flag1 = True
+            except:
+                print("**************************评论爬取发生错误，将在10-20秒后重试。。。**********************************")
+                time.sleep(random.randint(10,20))
+                #content = rq.get(url, proxies).text
+        #content = rq.get(url, proxies, headers=headers).text
+        #time.sleep(random.randint(3,5))
+        currentPage = re.findall(re.compile('"rateDate":"(.*?)","reply"'), content)
+        print('正在搜索第{}页的评论，请稍后。。。'.format(runningTimes))
+        #print(previousPage)
+        #print(currentPage)
+        if (len(currentPage) == 0):
+            # 可能是触发了验证码也可能没有更多评论显示，需要判断一下
+            delayMin = 2
+            delayMax = 4
+            '''pattern = re.compile(r'[a-zA-z]+://[^\s]*')
+            firstUrl = pattern.findall(content)  # 找到第一个域名,如果是正常的应该是tmall.com
+            pattern2 = re.compile(r'(?i)^https?://(?:\w+\.)*?(\w*\.(?:com\.cn|cn|com|net))[\\\/]*')  # 匹配顶级域名
+            isItCAPTCHA = pattern2.findall(firstUrl[0])  # 如果是触发了验证码，此时的域名应该是taobao.com'''
+            isItCAPTCHA = checkIfCAPTCHATriggered(content)
+            flag2 = False
+            while (isItCAPTCHA == ['taobao.com'] and count < 5): #延迟几秒重新加载，直至不再触发
+                print('***************************************爬取速度过快，验证码输入被触发！第{}次重试'
+                      '************************************************'.format(count + 1))
+                #print(isItCAPTCHA[0])
+                #time.sleep(random.randint(delayMin, delayMax))
+                delayMin += 1
+                delayMax += 1
+                while flag2 == False:
+                    try:
+                        #loginTriggered(delayMin , delayMax)
+                        content = rq.get(url, proxies, headers = headers).text
+                        flag2 = True
+                        count += 1
+                    except:
+                        print("*******************************验证码检测发生错误！即将重试。。。***************************")
+                        time.sleep(5)
+                #print(content)
 
+                isItCAPTCHA = checkIfCAPTCHATriggered(content)
+                flag2 = False
+                #urlOnHold.append(url)
+            currentPage = re.findall(re.compile('"rateDate":"(.*?)","reply"'), content)
+        if(count == 5):
+            print('超过重试次数上限，此页放弃！')
+            continue
+        if (len(currentPage) == 0
+                or previousPage == currentPage) and runningTimes >= 3:
+            print('*****************************************Bottom Reached********************************************')
+            print(previousPage)
+            print(currentPage)
+            break  # 在没有评论的时候跳出
+        username.extend(re.findall('"displayUserNick":"(.*?)"', content))
+        #previousPage = re.findall(re.compile('"rateDate":"(.*?)","reply"'), content)
+        previousPage = currentPage
+        reviewDate.extend(re.findall(re.compile('"rateDate":"(.*?)","reply"'), content))
+        reviewContent.extend(re.findall(re.compile('"rateContent":"(.*?)","rateDate"'), content))
+        runningTimes += 1
+        if runningTimes == reviewPageNumber + 1:
+            runningTimes = 0
+            # for j in range(0, len(reviewContent)):
+            # print(reviewContent[j] + '\n')
     file = open("C:\workspace\TmallReviewCrawlingToolLaptopVer\Reviews\{}.csv".format(productAndSellerID[item][0]),
                'w', encoding='utf-8')
 
@@ -141,12 +210,21 @@ def searchAndSaveReviews(urls, username, reviewDate, reviewContent, reviewPageNu
     file.close()
     numberOfReviews = len(reviewContent)
     return numberOfReviews
-def getUrls(reviewPageNumber, productID, sellerID):
+def getUrlsUnfolded(reviewPageNumber, productID, sellerID):
     urls = []
     for i in list(range(reviewPageNumber)):
         urls.append(
-            'https://rate.tmall.com/list_detail_rate.htm?itemId={}&sellerId={}&currentPage={}'
+            'https://rate.tmall.com/list_detail_rate.htm?itemId={}&sellerId={}&order=1&currentPage={}&content=0'
                 .format(productID, sellerID, i + 1))
+        # urls.append('https://rate.tmall.com/list_detail_rate.htm?itemId=538921269672&spuId=702279218&sellerId=1714128138&order=3&currentPage=%s'
+        # %i)
+    return urls
+def getUrlsFolded(reviewPageNumber, productID, sellerID):
+    urls = []
+    for i in list(range(reviewPageNumber)):
+        urls.append(
+            'https://rate.tmall.com/list_detail_rate.htm?itemId={}&sellerId={}&currentPage={}&content=0&needFold=1'
+                .format(productID, sellerID, i + 1)) #折叠的评论
         # urls.append('https://rate.tmall.com/list_detail_rate.htm?itemId=538921269672&spuId=702279218&sellerId=1714128138&order=3&currentPage=%s'
         # %i)
     return urls
@@ -158,17 +236,19 @@ def getReview(item,productAndSellerID, productName, reviewPageNumber):
         urls.append(
             'https://rate.tmall.com/list_detail_rate.htm?itemId={}&sellerId={}&currentPage={}'
             .format(productAndSellerID[item][0], productAndSellerID[item][3], i))
-        # urls.append('https://rate.tmall.com/list_detail_rate.htm?itemId=538921269672&spuId=702279218&sellerId=1714128138&order=3&currentPage=%s'
+        # urls.append('https://rate.tmall.com/list_detail_rate.htm?itemId=538921269672&spuId=702279218&sellerId=1714128
+        138&order=3&currentPage=%s'
         # %i)
     '''
-    urls = getUrls(reviewPageNumber, productAndSellerID[item][0], productAndSellerID[item][3])
+    urlsFolded = getUrlsFolded(reviewPageNumber, productAndSellerID[item][0], productAndSellerID[item][3])
+    urlsUnfolded = getUrlsUnfolded(reviewPageNumber, productAndSellerID[item][0], productAndSellerID[item][3])
     reviewContent = []
     username = []
     reviewDate = []
     runningTimes = 1
 
     # print(urls)
-    searchAndSaveReviews(urls, username, reviewDate, reviewContent, reviewPageNumber,
+    searchAndSaveReviews(urlsFolded, urlsUnfolded, username, reviewDate, reviewContent, reviewPageNumber,
                 runningTimes, productAndSellerID, item)
     #numberOfReviews = searchAndSaveReviews(urls, username, reviewDate, reviewContent, reviewPageNumber,
     #          runningTimes, productAndSellerID, item)
