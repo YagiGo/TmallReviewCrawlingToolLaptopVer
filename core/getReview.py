@@ -14,8 +14,8 @@ def loginTriggered(delayMin, delayMax):
           'tmallrateweb-rate-anti_Spider-checklogin&smCharset=GBK&smTAag=MjIzLjcyLjcwLjExMywsZjNlZGRhMjBkNmM4NGE5Mzg4N' \
           'jA0YjJkNzU2NzY4YzI%3D&smReturn=https%3A%2F%2Frate.tmall.com%2Flist_detail_rate.htm%3FitemId%3D535408892361%26' \
           'sellerId%3D849727411%26currentPage%3D50&smSign=V%2Fvid%2F75HKxVw4UkZ10YxA%3D%3D'
-    username = '斯普欧罗'
-    password = 'wuzh8285xin618'
+    username = '****'
+    password = '*************'
     browser.get(url)
     browser.find_element_by_id("TPL_username_1").clear()
     browser.find_element_by_id("TPL_username_1").send_keys(username)
